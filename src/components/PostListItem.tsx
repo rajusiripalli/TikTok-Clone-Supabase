@@ -7,12 +7,19 @@ import {
 } from "react-native";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Ionicons } from "@expo/vector-icons";
+import { Post } from "@/types/types";
 
 const videoSource =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-export default function PostListItem() {
+type videoItemProps = {
+  postItem: Post;
+};
+
+export default function PostListItem({ postItem }: videoItemProps) {
   const { height } = Dimensions.get("window");
+  const { nrOfComments, nrOfLikes, video_url, description, user, nrOfShares } =
+    postItem;
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = true;
     player.play();
@@ -32,7 +39,7 @@ export default function PostListItem() {
           onPress={() => console.log("Like Pressed")}
         >
           <Ionicons name="heart" size={33} color="#fff" />
-          <Text style={styles.interactionTxt}>0</Text>
+          <Text style={styles.interactionTxt}>{nrOfLikes[0]?.count || 0}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -40,7 +47,9 @@ export default function PostListItem() {
           onPress={() => console.log("comment Pressed")}
         >
           <Ionicons name="chatbubble" size={33} color="#fff" />
-          <Text style={styles.interactionTxt}>0</Text>
+          <Text style={styles.interactionTxt}>
+            {nrOfComments[0]?.count || 0}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -48,7 +57,7 @@ export default function PostListItem() {
           onPress={() => console.log("share Pressed")}
         >
           <Ionicons name="arrow-redo" size={33} color="#fff" />
-          <Text style={styles.interactionTxt}>20</Text>
+          <Text style={styles.interactionTxt}>{nrOfShares[0]?.count || 0}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -56,13 +65,15 @@ export default function PostListItem() {
           onPress={() => console.log("profile Pressed")}
         >
           <View>
-            <Text style={styles.avatarTxt}>L</Text>
+            <Text style={styles.avatarTxt}>
+              {user?.username.charAt(0).toUpperCase()}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
       <View style={styles.videoInfo}>
-        <Text style={styles.username}>Jesus</Text>
-        <Text style={styles.desscription}>Jesus Loves You</Text>
+        <Text style={styles.username}>{user?.username}</Text>
+        <Text style={styles.desscription}>{description}</Text>
       </View>
     </View>
   );
