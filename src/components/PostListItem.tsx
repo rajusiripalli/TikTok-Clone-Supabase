@@ -8,22 +8,47 @@ import {
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Ionicons } from "@expo/vector-icons";
 import { Post } from "@/types/types";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 const videoSource =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
 type videoItemProps = {
   postItem: Post;
+  isActive: boolean;
 };
 
-export default function PostListItem({ postItem }: videoItemProps) {
+export default function PostListItem({ postItem, isActive }: videoItemProps) {
   const { height } = Dimensions.get("window");
   const { nrOfComments, nrOfLikes, video_url, description, user, nrOfShares } =
     postItem;
-  const player = useVideoPlayer(videoSource, (player) => {
+  const player = useVideoPlayer(video_url, (player) => {
     player.loop = true;
-    player.play();
+    //player.play();
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!player) return;
+      try {
+        if (player && isActive) {
+          player.play();
+        }
+      } catch (err) {
+        console.log("Error in playing video:", err);
+      }
+      return () => {
+        try {
+          if (isActive && player) {
+            player.pause();
+          }
+        } catch (error) {
+          console.log("Error in pausing video:", error);
+        }
+      };
+    }, [isActive, player])
+  );
   return (
     <View style={{ height: height - 80 }}>
       <VideoView
